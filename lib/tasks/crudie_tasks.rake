@@ -1,4 +1,4 @@
 # desc "Explaining what the task does"
-# task :crudify do
+# task :crudie do
 #   # Task goes here
 # end

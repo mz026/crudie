@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    crudify (0.0.1)
+    crudie (0.0.1)
       rails (~> 4.1.8)
 
 GEM
@@ -100,6 +100,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  crudify!
+  crudie!
   rspec-rails
   sqlite3

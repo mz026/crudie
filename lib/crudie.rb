@@ -1,0 +1,2 @@
+module Crudie
+end
