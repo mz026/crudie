@@ -43,6 +43,21 @@ module Crudie
         render :template => template_path(:show)
       end
 
+      # define method: `update`
+      # update resource via `crudie_context.find(params[:id])` with `crudie_params`
+      # render `#{template_base}#{resources}/update.#{template_extension}`
+      define_method(:update) do 
+        instance = crudie_context.find(params[:id])
+        updating_success = instance.update_attributes(crudie_params)
+
+        if updating_success
+          instance_variable_set("@#{resource}".to_sym, instance)
+          render :template => template_path(:update)
+        else
+          render :status => 409, :json => { :reason => instance.errors.messages }
+        end
+      end
+
     end
   end
 end

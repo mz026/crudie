@@ -84,10 +84,19 @@ RSpec.describe ProjectsController, :type => :controller do
       allow(projects).to receive(:find).and_return(project)
     end
 
-    # it "updates instance" do
-    #   expect(project).to receive(:update_attributes).with(params[:project])
-    #   put :update, params
-    # end
+    it "updates instance" do
+      expect(project).to receive(:update_attributes).with(params[:project])
+      put :update, params
+      expect(controller.instance_variable_get(:@project)).to be project
+    end
+
+    it "render 409 if updating failed" do
+      expect(project).to receive(:update_attributes).with(params[:project]).and_return(false)
+      expect(project).to receive(:errors).and_return(double(:messages => 'the messages'))
+
+      put :update, params
+      expect(response.status).to eq 409
+    end
     
   end
 end
