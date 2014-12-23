@@ -52,4 +52,42 @@ RSpec.describe ProjectsController, :type => :controller do
       expect(response.status).to eq 200
     end
   end
+
+  describe "GET :show" do
+    let(:params) do
+      {
+        :id => 111,
+        :user_id => 123
+      }
+    end
+    before :each do
+      allow(projects).to receive(:find).and_return(project)
+    end
+
+    it "shows the resource instance by id" do
+      get :show, params
+      expect(controller.instance_variable_get(:@project)).to be project
+    end
+  end
+
+  describe "PUT :update" do
+    let(:params) do
+      {
+        :id => 111,
+        :user_id => 123,
+        :project => {
+          :name => 'new name'
+        }
+      }
+    end
+    before :each do
+      allow(projects).to receive(:find).and_return(project)
+    end
+
+    # it "updates instance" do
+    #   expect(project).to receive(:update_attributes).with(params[:project])
+    #   put :update, params
+    # end
+    
+  end
 end
