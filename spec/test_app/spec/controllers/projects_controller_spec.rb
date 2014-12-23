@@ -17,9 +17,30 @@ RSpec.describe ProjectsController, :type => :controller do
         }
       }
     end
-    it 'creates project under user' do
+
+    before :each do
       expect(projects).to receive(:create).with(params[:project]).and_return(project)
+    end
+
+    it 'creates project under user' do
       post :create, params
     end
+
+    it "sets controller.@project as project" do
+      post :create, params
+      
+      expect(controller.instance_variable_get(:@project)).to be(project)
+    end
+
+    it "returns 409 if resource is not valid" do
+      allow(project).to receive_messages(:valid? => false,
+                                         :errors => double(:messages => 'the messages'))
+      post :create, params
+      expect(response.status).to eq 409
+    end
+  end
+
+  describe 'GET :index' do
+    
   end
 end
