@@ -41,6 +41,15 @@ RSpec.describe ProjectsController, :type => :controller do
   end
 
   describe 'GET :index' do
-    
+    let(:params) do
+      {
+        :user_id => 123
+      }
+    end
+    it "returns projects of user" do
+      get :index, params
+      expect(controller.instance_variable_get(:@projects)).to be(projects)
+      expect(response.status).to eq 200
+    end
   end
 end
