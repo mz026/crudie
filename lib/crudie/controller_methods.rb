@@ -58,6 +58,15 @@ module Crudie
         end
       end
 
+      # define method: `destroy`
+      # destroy resource via `crudie_context.find(params[:id])`
+      define_method(:destroy) do
+        instance = crudie_context.find(params[:id])
+        instance.destroy
+
+        render :json => { :status => 'destroy isntance ok' }
+      end
+
     end
   end
 end

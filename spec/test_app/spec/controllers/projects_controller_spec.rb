@@ -85,7 +85,7 @@ RSpec.describe ProjectsController, :type => :controller do
     end
 
     it "updates instance" do
-      expect(project).to receive(:update_attributes).with(params[:project])
+      expect(project).to receive(:update_attributes).with(params[:project]).and_return(true)
       put :update, params
       expect(controller.instance_variable_get(:@project)).to be project
     end
@@ -98,5 +98,22 @@ RSpec.describe ProjectsController, :type => :controller do
       expect(response.status).to eq 409
     end
     
+  end
+
+  describe "DELETE :destroy" do
+    let(:params) do
+      {
+        :id => 111,
+        :user_id => 123
+      }
+    end
+    before :each do
+      allow(projects).to receive(:find).and_return(project)
+    end
+    
+    it "destroy the instance" do
+      expect(project).to receive(:destroy)
+      delete :destroy, params
+    end
   end
 end
