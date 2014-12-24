@@ -1,17 +1,19 @@
 module Crudie
   module Spec
 
-    def include_crudie_spec resource
+    def include_crudie_spec resource, options = {}
+      context_name = options[:context_name]
+
       describe "Crudie spec for `#{resource}`" do
         let(:resource) { resource }
         let(:resources) { resource.to_s.pluralize }
         context 
 
-        test_create resource
-        test_index resource
-        test_show resource
-        test_update resource
-        test_destroy resource
+        test_create resource, context_name
+        test_index resource, context_name
+        test_show resource, context_name
+        test_update resource, context_name
+        test_destroy resource, context_name
       end
     end
 
@@ -24,13 +26,12 @@ module Crudie
       end
     end
 
-
-    def test_index resource
+    def test_index resource, context_name
       describe 'GET :index' do
         let(:params) do
-          {
-            :user_id => 123
-          }
+          prm = {}
+          prm["#{context_name}_id"] = 123 if context_name
+          prm
         end
         it "returns projects of user" do
           get :index, params
@@ -41,18 +42,17 @@ module Crudie
       
     end
 
-    def test_create resource
+    def test_create resource, context_name
       describe "POST :create" do
         let(:params) do
-          {
-            :user_id => 123,
-            :project => {
-              :name => 'sample project name'
-            }
-          }
+          prm = {}
+          prm["#{context_name}_id".to_sym] = 123 if context_name
+          prm[resource] = { 'key' => 'val' }
+          prm
         end
 
         before :each do
+          allow(controller).to receive(:crudie_params).and_return(params[resource])
           expect(crudie_context).to receive(:create).with(params[resource]).and_return(crudie_instance)
         end
 
@@ -76,16 +76,12 @@ module Crudie
     end
 
 
-    def test_show resource
+    def test_show resource, context_name
       describe "GET :show" do
         let(:params) do
-          {
-            :id => 111,
-            :user_id => 123
-          }
-        end
-        before :each do
-          allow(crudie_context).to receive(:find).and_return(crudie_instance)
+          prm = { :id => 123 }
+          prm["#{context_name}_id"] = 123 if context_name
+          prm
         end
 
         it "shows the resource instance by id" do
@@ -96,19 +92,15 @@ module Crudie
       
     end
 
-    def test_update resource
+    def test_update resource, context_name
       describe "PUT :update" do
         let(:params) do
-          {
-            :id => 111,
-            :user_id => 123,
-            :project => {
-              :name => 'new name'
-            }
-          }
+          prm = { :id => 123, resource => { 'key' => 'val' } }
+          prm["#{context_name}_id"] = 123 if context_name
+          prm
         end
         before :each do
-          allow(crudie_context).to receive(:find).and_return(crudie_instance)
+          allow(controller).to receive(:crudie_params).and_return(params[resource])
         end
 
         it "updates instance" do
@@ -131,16 +123,12 @@ module Crudie
 
     end
 
-    def test_destroy resource
+    def test_destroy resource, context_name
       describe "DELETE :destroy" do
         let(:params) do
-          {
-            :id => 111,
-            :user_id => 123
-          }
-        end
-        before :each do
-          allow(crudie_context).to receive(:find).and_return(crudie_instance)
+          prm = { :id => 123 }
+          prm["#{context_name}_id"] = 123 if context_name
+          prm
         end
         
         it "destroy the instance" do
