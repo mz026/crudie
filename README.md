@@ -69,6 +69,7 @@ end
 
 ### Template Rendering
 The defined methods do the CRUD operations on the resource and then render templates based on action name, except `delete`, which renders json to hint result directly.
+
 Say we have a resource named `item`, by invoking `crudie :item`, the `create` method will render template on `items/create.json.jbuilder`
 
 
@@ -106,10 +107,10 @@ end
 ```
 
 - views to prepare:
-`items/create.json.jbuilder`
-`items/index.json.jbuilder`
-`items/show.json.jbuilder`
-`items/update.json.jbuilder`
+- `items/create.json.jbuilder`
+- `items/index.json.jbuilder`
+- `items/show.json.jbuilder`
+- `items/update.json.jbuilder`
 
 
 ## Testing:
