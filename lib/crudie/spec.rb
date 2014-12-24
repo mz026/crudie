@@ -1,17 +1,32 @@
 module Crudie
   module Spec
 
-    def test_index resource
-      resource = :project
-      resources = :projects
-      context = :user
+    def include_crudie_spec resource
+      describe "Crudie spec for `#{resource}`" do
+        let(:resource) { resource }
+        let(:resources) { resource.to_s.pluralize }
+        context 
 
+        test_create resource
+        test_index resource
+        test_show resource
+        test_update resource
+        test_destroy resource
+      end
+    end
+
+    private
+    def context
+      let(:crudie_context) { double(:crudie_context, :find => crudie_instance) }
+      let(:crudie_instance) { double(:crudie_instance, :valid? => true) }
+      before :each do
+        allow(controller).to receive(:crudie_context).and_return(crudie_context)
+      end
+    end
+
+
+    def test_index resource
       describe 'GET :index' do
-        let(:crudie_context) { double(:crudie_context, :find => crudie_instance) }
-        let(:crudie_instance) { double(:crudie_instance, :valid? => true) }
-        before :each do
-          allow(controller).to receive(:crudie_context).and_return(crudie_context)
-        end
         let(:params) do
           {
             :user_id => 123
@@ -27,18 +42,7 @@ module Crudie
     end
 
     def test_create resource
-      resource = :project
-      resources = :projects
-      context = :user
-
-
       describe "POST :create" do
-        let(:crudie_context) { double(:crudie_context, :find => crudie_instance) }
-        let(:crudie_instance) { double(:crudie_instance, :valid? => true) }
-        before :each do
-          allow(controller).to receive(:crudie_context).and_return(crudie_context)
-        end
-
         let(:params) do
           {
             :user_id => 123,
@@ -52,7 +56,7 @@ module Crudie
           expect(crudie_context).to receive(:create).with(params[resource]).and_return(crudie_instance)
         end
 
-        it "creates a #{resource} under #{context}" do
+        it "creates a #{resource} under context" do
           post :create, params
         end
 
@@ -73,16 +77,7 @@ module Crudie
 
 
     def test_show resource
-      resource = :project
-      resources = :projects
-      context = :user
-
       describe "GET :show" do
-        let(:crudie_context) { double(:crudie_context, :find => crudie_instance) }
-        let(:crudie_instance) { double(:crudie_instance, :valid? => true) }
-        before :each do
-          allow(controller).to receive(:crudie_context).and_return(crudie_context)
-        end
         let(:params) do
           {
             :id => 111,
@@ -102,16 +97,7 @@ module Crudie
     end
 
     def test_update resource
-      resource = :project
-      resources = :projects
-      context = :user
-
       describe "PUT :update" do
-        let(:crudie_context) { double(:crudie_context, :find => crudie_instance) }
-        let(:crudie_instance) { double(:crudie_instance, :valid? => true) }
-        before :each do
-          allow(controller).to receive(:crudie_context).and_return(crudie_context)
-        end
         let(:params) do
           {
             :id => 111,
@@ -147,11 +133,6 @@ module Crudie
 
     def test_destroy resource
       describe "DELETE :destroy" do
-        let(:crudie_context) { double(:crudie_context, :find => crudie_instance) }
-        let(:crudie_instance) { double(:crudie_instance, :valid? => true) }
-        before :each do
-          allow(controller).to receive(:crudie_context).and_return(crudie_context)
-        end
         let(:params) do
           {
             :id => 111,
