@@ -7,16 +7,16 @@ require "crudie/version"
 Gem::Specification.new do |s|
   s.name        = "crudie"
   s.version     = Crudie::VERSION
-  s.authors     = ["TODO: Your name"]
-  s.email       = ["TODO: Your email"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of Crudie."
-  s.description = "TODO: Description of Crudie."
+  s.authors     = ["Yang-Hsing Lin"]
+  s.email       = ["yanghsing.lin@gmail.com"]
+  s.homepage    = ""
+  s.summary     = "A rails plugin to abstract CRUD api in controller"
+  s.description = "A rails plugin to abstract CRUD api in controller"
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
-  s.add_dependency "rails", "~> 4.1.8"
+  s.add_dependency "rails", ">= 4.0.0"
 
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "rspec-rails"
