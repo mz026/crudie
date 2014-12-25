@@ -1,5 +1,11 @@
 # Crudie
-Crudie is a Rails plugin handling CRUD API in controller level given a resource.
+`Crudie` is a Rails plugin handling CRUD API in controller level given a resource.
+
+## Features:
+- View layer decoupled
+- API parameters decoupled
+- Nested resource is supported by `curdie_context`
+- Unit test helpers provided
 
 ## In a nut shell:
 Say we have a resource `Item` and would like to provide APIs to do Creation, Reading, Updating and Deletion (CRUD) on it.
@@ -46,6 +52,8 @@ if the resource is to be found by `user.items` on the other hand, then the pool 
   - `options`(optional): 
     - `:template_base`: template base path, default to `''`, will be prepended to template path when rendering
     - `:template_extension`: template extension to be appended to template path, defualt to '.json.jbuilder'
+    - `:only`: an array of method names. Only the methods in the array would be added to controller by `::crudie` 
+    - `:except`: an array of method nmae. Method names specified in this array would NOT be added to controller.
 
 ## How It Works:
 `Crudie` defines five instance methods on controller class when `crudie <resource_name>` is called: `index`, `show`, `create`, `update`, and `destroy`, 
