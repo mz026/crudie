@@ -12,16 +12,16 @@ module Crudie
         def include_crudie_spec_for resource, options = {}
           context_name = options[:context_name]
 
+          methods_to_test = options[:only] || [ :create, :index, :update, :show, :destroy ]
+          excluded_methods = options[:except] || []
+          methods_to_test = methods_to_test - excluded_methods
+
           describe "Crudie spec for `#{resource}`" do
             let(:resource) { resource }
             let(:resources) { resource.to_s.pluralize }
             context 
 
-            test_create resource, context_name
-            test_index resource, context_name
-            test_show resource, context_name
-            test_update resource, context_name
-            test_destroy resource, context_name
+            methods_to_test.each { |m| send("test_#{m}".to_sym, resource, context_name) }
           end
         end
 

@@ -139,7 +139,9 @@ end
 require 'crudie/spec'
 describe ItemsController do
   include Crudie::Spec
-  include_crudie_spec_for :items, :context_name => :user
+  include_crudie_spec_for :items, :context_name => :user,
+                          :only => [ :index, :show, :update ],
+                          :exclude => [ :destroy ]
 end
 ```
 
