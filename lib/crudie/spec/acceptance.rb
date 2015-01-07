@@ -109,22 +109,31 @@ module Crudie::Spec::Acceptance
         end
 
 
-        # delete '/users/:user_id/projects/:project_id' do
-        #   parameters.each do |key, detail|
-        #     parameter key, detail[:desc], detail[:options]
-        #     let(key) { detail[:value] }
-        #   end
-        #   let(resource_name_id) { resource_instance.id }
-        #   let!(:resource_instance) do
-        #     resource_creator.call(1, parent_instance)
-        #   end
+        delete singular_url do
+          parameters.each do |key, detail|
+            parameter key, detail[:desc], detail[:options]
+            let(key) { detail[:value] }
+          end
+          let(resource_name_id) { resource_instance.id }
+          let!(:resource_instance) do
+            if parent_exists
+              resource_creator.call(1, parent_instance)
+            else
+              resource_creator.call(1)
+            end
+          end
 
-        #   example 'Deletion' do
-        #     do_request
-        #     expect(resource_context.call(parent_instance)
-        #                            .where(resource_instance.id)).to be_empty
-        #   end
-        # end
+          example 'Deletion' do
+            do_request
+            if parent_exists
+              expect(resource_context.call(parent_instance)
+                                     .where(resource_instance.id)).to be_empty
+            else
+              expect(resource_context.call
+                                     .where(resource_instance.id)).to be_empty
+            end
+          end
+        end
         
       end
     end

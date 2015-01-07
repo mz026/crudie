@@ -41,7 +41,6 @@ RSpec.describe ProjectsController, :type => :controller do
   end
 
   describe 'GET :index' do
-    render_views
     let(:params) do
       {
         :user_id => 123
