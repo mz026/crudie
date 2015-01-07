@@ -4,20 +4,26 @@ module Crudie::Spec::Acceptance
       def include_acceptance_spec_for resource, options = {}
         resource_name = options[:resource][:name]
         resource_names = resource_name.to_s.pluralize
+        resource_name_id = "#{resource_name}_id"
+        resource_creator = options[:resource][:creator]
 
         parent = options[:parent]
         parent_name = parent[:name]
         parent_names = parent_name.to_s.pluralize
         parent_creator = parent[:creator]
+        parent_name_id = "#{parent_name}_id"
+
+        singular_url = "/#{parent_names}/:#{parent_name_id}/#{resource_names}/:#{resource_name_id}"
+        plural_url = "/#{parent_names}/:#{parent_name_id}/#{resource_names}"
 
         
         # index spec
-        get "/#{parent_names}/:#{parent_name}_id/#{resource_names}" do
+        get plural_url do
           let(:parent_instance) { parent_creator.call }
-          let("#{parent_name}_id") { parent_instance.id }
+          let(parent_name_id) { parent_instance.id }
           let!(:resources) do
             3.times do |i|
-              options[:resource][:creator].call(parent_instance, i)
+              resource_creator.call(parent_instance, i)
             end
           end
 
@@ -29,13 +35,13 @@ module Crudie::Spec::Acceptance
         end
 
         # show spec
-        get "/#{parent_names}/:#{parent_name}_id/#{resource_names}/:#{resource}_id" do
+        get singular_url do
           let(:parent_instance) { parent[:creator].call }
-          let("#{parent_name}_id") { parent_instance.id }
+          let(parent_name_id) { parent_instance.id }
 
-          let("#{resource}_id") { resource_instance.id }
+          let(resource_name_id) { resource_instance.id }
           let!(:resource_instance) do
-            options[:resource][:creator].call(parent_instance, 1)
+            resource_creator.call(parent_instance, 1)
           end
 
           example 'Show' do
