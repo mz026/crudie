@@ -1,3 +1,45 @@
+# Acceptance spec helper
+# Usage:
+# 1. for resource without parent:
+# include Crudie::Spec::Acceptance
+# include_acceptance_spec_for :resource => {
+#                               :name => :user,
+#                               :creator => ->(index){ User.create :name => index },
+#                               :context => ->{ User.all }
+#                             },
+#                             :parameters => {
+#                               :name => {
+#                                 :desc => 'user name',
+#                                 :value => 'the new user name',
+#                                 :options => {
+#                                   :scope => :user,
+#                                   :required => true
+#                                 }
+#                               }
+#                             }
+#
+# 2. for resource with parent:
+# include Crudie::Spec::Acceptance
+# include_acceptance_spec_for :parent => {
+#                               :name => :user,
+#                               :creator => ->{ User.create :name => 'jack' }
+#                             },
+#                             :resource => {
+#                               :name => :project,
+#                               :creator => ->(i, user){ user.projects.create :name => i },
+#                               :context => ->(parent) { parent.projects }
+#                             },
+#                             :parameters => {
+#                               :name => {
+#                                 :desc => 'project name',
+#                                 :value => 'the new project name',
+#                                 :options => {
+#                                   :scope => :project,
+#                                   :required => true
+#                                 }
+#                               }
+#                             }
+
 module Crudie::Spec::Acceptance
   def self.included base
     class << base
