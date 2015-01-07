@@ -9,14 +9,14 @@ resource 'User' do
                               :resource => {
                                 :name => :user,
                                 :creator => ->(index){ User.create :name => index },
-                                :context => ->(parent) { User }
+                                :context => ->{ User.all }
                               },
                               :parameters => {
                                 :name => {
                                   :desc => 'user name',
                                   :value => 'the new user name',
                                   :options => {
-                                    :scope => :project,
+                                    :scope => :user,
                                     :required => true
                                   }
                                 }

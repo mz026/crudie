@@ -63,21 +63,26 @@ module Crudie::Spec::Acceptance
         end
 
 
-        # # Create spec
-        # parameters = options[:parameters]
+        # Create spec
+        parameters = options[:parameters]
 
-        # post plural_url do
-        #   parameters.each do |key, detail|
-        #     parameter key, detail[:desc], detail[:options]
-        #     let(key) { detail[:value] }
-        #   end
-        #   
-        #   example 'Create' do
-        #     do_request
+        post plural_url do
+          parameters.each do |key, detail|
+            parameter key, detail[:desc], detail[:options]
+            let(key) { detail[:value] }
+          end
+          
+          example 'Create' do
+            do_request
 
-        #     expect(parent_instance.projects.count).to eq 1
-        #   end
-        # end
+            if parent_exists
+              expect(resource_context.call(parent_instance).count).to eq 1
+            else
+              expect(resource_context.call.count).to eq 1
+            end
+
+          end
+        end
 
         # put singular_url do
         #   parameters.each do |key, detail|
