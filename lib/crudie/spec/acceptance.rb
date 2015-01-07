@@ -8,6 +8,8 @@ module Crudie::Spec::Acceptance
         resource_creator = options[:resource][:creator]
         resource_context = options[:resource][:context]
 
+        request_parameters = options[:parameters]
+
         parent_exists = ! options[:parent].nil?
 
         if parent_exists
@@ -27,8 +29,23 @@ module Crudie::Spec::Acceptance
           singular_url = "/#{resource_names}/:#{resource_name_id}"
         end
 
+        shared_context 'with_single_resource_instance' do 
+          let!(:resource_instance) do
+            if parent_exists
+              resource_creator.call(1, parent_instance)
+            else
+              resource_creator.call(1)
+            end
+          end
+        end
 
-        
+        shared_context 'with_parameters' do
+          request_parameters.each do |key, detail|
+            parameter key, detail[:desc], detail[:options]
+            let(key) { detail[:value] }
+          end
+          let(resource_name_id) { resource_instance.id }
+        end
 
         # index spec
         get plural_url do
@@ -49,12 +66,8 @@ module Crudie::Spec::Acceptance
 
         # show spec
         get singular_url do
+          include_context 'with_single_resource_instance'
           let(resource_name_id) { resource_instance.id }
-          let!(:resource_instance) do
-            parent_exists ?
-              resource_creator.call(1, parent_instance) :
-              resource_creator.call(1)
-          end
 
           example 'Show' do
             do_request
@@ -64,14 +77,8 @@ module Crudie::Spec::Acceptance
 
 
         # Create spec
-        parameters = options[:parameters]
-
         post plural_url do
-          parameters.each do |key, detail|
-            parameter key, detail[:desc], detail[:options]
-            let(key) { detail[:value] }
-          end
-          
+          include_context 'with_parameters'
           example 'Create' do
             do_request
 
@@ -85,24 +92,14 @@ module Crudie::Spec::Acceptance
         end
 
         put singular_url do
-          parameters.each do |key, detail|
-            parameter key, detail[:desc], detail[:options]
-            let(key) { detail[:value] }
-          end
-          let(resource_name_id) { resource_instance.id }
-          let!(:resource_instance) do
-            if parent_exists
-              resource_creator.call(1, parent_instance)
-            else
-              resource_creator.call(1)
-            end
-          end
+          include_context 'with_single_resource_instance'
+          include_context 'with_parameters'
 
           example 'Updating' do
             do_request
 
             resource_instance.reload
-            parameters.each do |key, val|
+            request_parameters.each do |key, val|
               expect(resource_instance.send(key)).to eq(send(key))
             end
           end
@@ -110,18 +107,8 @@ module Crudie::Spec::Acceptance
 
 
         delete singular_url do
-          parameters.each do |key, detail|
-            parameter key, detail[:desc], detail[:options]
-            let(key) { detail[:value] }
-          end
+          include_context 'with_single_resource_instance'
           let(resource_name_id) { resource_instance.id }
-          let!(:resource_instance) do
-            if parent_exists
-              resource_creator.call(1, parent_instance)
-            else
-              resource_creator.call(1)
-            end
-          end
 
           example 'Deletion' do
             do_request
