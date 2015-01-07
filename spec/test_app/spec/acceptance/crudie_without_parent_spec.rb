@@ -5,8 +5,7 @@ require 'crudie/spec'
 resource 'User' do
   include Crudie::Spec::Acceptance
 
-  include_acceptance_spec_for :user, 
-                              :resource => {
+  include_acceptance_spec_for :resource => {
                                 :name => :user,
                                 :creator => ->(index){ User.create :name => index },
                                 :context => ->{ User.all }

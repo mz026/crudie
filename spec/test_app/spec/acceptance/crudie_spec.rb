@@ -5,8 +5,7 @@ require 'crudie/spec'
 resource 'Projects' do
   include Crudie::Spec::Acceptance
 
-  include_acceptance_spec_for :project, 
-                              :parent => {
+  include_acceptance_spec_for :parent => {
                                 :name => :user,
                                 :creator => ->{ User.create :name => 'jack' }
                               },

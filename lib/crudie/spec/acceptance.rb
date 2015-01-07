@@ -1,7 +1,7 @@
 module Crudie::Spec::Acceptance
   def self.included base
     class << base
-      def include_acceptance_spec_for resource, options = {}
+      def include_acceptance_spec_for options 
         resource_name = options[:resource][:name]
         resource_names = resource_name.to_s.pluralize
         resource_name_id = "#{resource_name}_id"
