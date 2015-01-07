@@ -6,6 +6,7 @@ module Crudie::Spec::Acceptance
         resource_names = resource_name.to_s.pluralize
         resource_name_id = "#{resource_name}_id"
         resource_creator = options[:resource][:creator]
+        resource_context = options[:resource][:context]
 
         parent = options[:parent]
         parent_name = parent[:name]
@@ -65,7 +66,7 @@ module Crudie::Spec::Acceptance
           end
         end
 
-        put '/users/:user_id/projects/:project_id' do
+        put singular_url do
           parameters.each do |key, detail|
             parameter key, detail[:desc], detail[:options]
             let(key) { detail[:value] }
@@ -85,6 +86,23 @@ module Crudie::Spec::Acceptance
           end
         end
 
+
+        delete '/users/:user_id/projects/:project_id' do
+          parameters.each do |key, detail|
+            parameter key, detail[:desc], detail[:options]
+            let(key) { detail[:value] }
+          end
+          let(resource_name_id) { resource_instance.id }
+          let!(:resource_instance) do
+            resource_creator.call(parent_instance, 1)
+          end
+
+          example 'Deletion' do
+            do_request
+            expect(resource_context.call(parent_instance)
+                                   .where(resource_instance.id)).to be_empty
+          end
+        end
         
       end
     end

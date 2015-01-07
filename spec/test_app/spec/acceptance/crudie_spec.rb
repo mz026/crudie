@@ -12,7 +12,8 @@ resource 'Projects' do
                               },
                               :resource => {
                                 :name => :project,
-                                :creator => ->(user, i){ user.projects.create :name => i }
+                                :creator => ->(user, i){ user.projects.create :name => i },
+                                :context => ->(parent) { parent.projects }
                               },
                               :parameters => {
                                 :name => {
