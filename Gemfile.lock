@@ -37,8 +37,16 @@ GEM
     builder (3.2.2)
     diff-lcs (1.2.5)
     erubis (2.7.0)
+    factory_girl (4.5.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (4.5.0)
+      factory_girl (~> 4.5.0)
+      railties (>= 3.0.0)
     hike (1.2.3)
     i18n (0.7.0)
+    jbuilder (1.5.3)
+      activesupport (>= 3.0.0)
+      multi_json (>= 1.2.0)
     json (1.8.1)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
@@ -111,6 +119,8 @@ PLATFORMS
 
 DEPENDENCIES
   crudie!
+  factory_girl_rails
+  jbuilder
   rspec-rails
   rspec_api_documentation
   sqlite3
