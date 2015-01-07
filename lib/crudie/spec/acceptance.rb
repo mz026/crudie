@@ -65,6 +65,26 @@ module Crudie::Spec::Acceptance
           end
         end
 
+        put '/users/:user_id/projects/:project_id' do
+          parameters.each do |key, detail|
+            parameter key, detail[:desc], detail[:options]
+            let(key) { detail[:value] }
+          end
+          let(resource_name_id) { resource_instance.id }
+          let!(:resource_instance) do
+            resource_creator.call(parent_instance, 1)
+          end
+
+          example 'Updating' do
+            do_request
+
+            resource_instance.reload
+            parameters.each do |key, val|
+              expect(resource_instance.send(key)).to eq(send(key))
+            end
+          end
+        end
+
         
       end
     end
