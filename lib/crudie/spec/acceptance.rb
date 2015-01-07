@@ -17,10 +17,11 @@ module Crudie::Spec::Acceptance
         plural_url = "/#{parent_names}/:#{parent_name_id}/#{resource_names}"
 
         
+        let(:parent_instance) { parent_creator.call }
+        let(parent_name_id) { parent_instance.id }
+
         # index spec
         get plural_url do
-          let(:parent_instance) { parent_creator.call }
-          let(parent_name_id) { parent_instance.id }
           let!(:resources) do
             3.times do |i|
               resource_creator.call(parent_instance, i)
@@ -36,9 +37,6 @@ module Crudie::Spec::Acceptance
 
         # show spec
         get singular_url do
-          let(:parent_instance) { parent[:creator].call }
-          let(parent_name_id) { parent_instance.id }
-
           let(resource_name_id) { resource_instance.id }
           let!(:resource_instance) do
             resource_creator.call(parent_instance, 1)
@@ -51,17 +49,21 @@ module Crudie::Spec::Acceptance
         end
 
 
-        # post '/users/:user_id/projects' do
-        #   parameter :user_id, 'user id', required: true
-        #   parameter :name, 'project name', :scope => :project
-        #   let(:name) { 'project name' }
-        #   
-        #   example 'Create' do
-        #     do_request
+        # Create spec
+        parameters = options[:parameters]
 
-        #     expect(user.projects.count).to eq 1
-        #   end
-        # end
+        post plural_url do
+          parameters.each do |key, detail|
+            parameter key, detail[:desc], detail[:options]
+            let(key) { detail[:value] }
+          end
+          
+          example 'Create' do
+            do_request
+
+            expect(parent_instance.projects.count).to eq 1
+          end
+        end
 
         
       end

@@ -13,5 +13,15 @@ resource 'Projects' do
                               :resource => {
                                 :name => :project,
                                 :creator => ->(user, i){ user.projects.create :name => i }
+                              },
+                              :parameters => {
+                                :name => {
+                                  :desc => 'project name',
+                                  :value => 'the new project name',
+                                  :options => {
+                                    :scope => :project,
+                                    :required => true
+                                  }
+                                }
                               }
 end
