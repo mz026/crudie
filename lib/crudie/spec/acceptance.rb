@@ -2,9 +2,8 @@ module Crudie::Spec::Acceptance
   def self.included base
     class << base
       def include_acceptance_spec_for options 
-        resource_name = options[:resource][:name]
-        resource_names = resource_name.to_s.pluralize
-        resource_name_id = "#{resource_name}_id"
+        resource_names = options[:resource][:name].to_s.pluralize
+        resource_name_id = "#{options[:resource][:name]}_id"
         resource_creator = options[:resource][:creator]
         resource_context = options[:resource][:context]
 
@@ -13,20 +12,18 @@ module Crudie::Spec::Acceptance
         parent_exists = ! options[:parent].nil?
 
         if parent_exists
-          parent = options[:parent]
-          parent_name = parent[:name]
-          parent_names = parent_name.to_s.pluralize
-          parent_creator = parent[:creator]
-          parent_name_id = "#{parent_name}_id"
+          parent_names = options[:parent][:name].to_s.pluralize
+          parent_creator = options[:parent][:creator]
+          parent_name_id = "#{options[:parent][:name]}_id"
 
-          singular_url = "/#{parent_names}/:#{parent_name_id}/#{resource_names}/:#{resource_name_id}"
           plural_url = "/#{parent_names}/:#{parent_name_id}/#{resource_names}"
+          singular_url = "#{plural_url}/:#{resource_name_id}"
 
           let(:parent_instance) { parent_creator.call }
           let(parent_name_id) { parent_instance.id }
         else
           plural_url = "/#{resource_names}"
-          singular_url = "/#{resource_names}/:#{resource_name_id}"
+          singular_url = "#{plural_url}/:#{resource_name_id}"
         end
 
         only_actions = options[:only] || [ :index, :show, :update, :destroy, :create ]
