@@ -10,5 +10,6 @@
 module Crudie
   module Spec
     require 'crudie/spec/unit'
+    require 'crudie/spec/acceptance'
   end
 end
