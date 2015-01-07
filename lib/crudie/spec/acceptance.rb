@@ -8,24 +8,35 @@ module Crudie::Spec::Acceptance
         resource_creator = options[:resource][:creator]
         resource_context = options[:resource][:context]
 
-        parent = options[:parent]
-        parent_name = parent[:name]
-        parent_names = parent_name.to_s.pluralize
-        parent_creator = parent[:creator]
-        parent_name_id = "#{parent_name}_id"
+        parent_exists = ! options[:parent].nil?
 
-        singular_url = "/#{parent_names}/:#{parent_name_id}/#{resource_names}/:#{resource_name_id}"
-        plural_url = "/#{parent_names}/:#{parent_name_id}/#{resource_names}"
+        if parent_exists
+          parent = options[:parent]
+          parent_name = parent[:name]
+          parent_names = parent_name.to_s.pluralize
+          parent_creator = parent[:creator]
+          parent_name_id = "#{parent_name}_id"
+
+          singular_url = "/#{parent_names}/:#{parent_name_id}/#{resource_names}/:#{resource_name_id}"
+          plural_url = "/#{parent_names}/:#{parent_name_id}/#{resource_names}"
+
+          let(:parent_instance) { parent_creator.call }
+          let(parent_name_id) { parent_instance.id }
+        else
+          plural_url = "/#{resource_names}"
+          singular_url = "/#{resource_names}/:#{resource_name_id}"
+        end
+
 
         
-        let(:parent_instance) { parent_creator.call }
-        let(parent_name_id) { parent_instance.id }
 
         # index spec
         get plural_url do
           let!(:resources) do
             3.times do |i|
-              resource_creator.call(parent_instance, i)
+              parent_exists ? 
+                resource_creator.call(i, parent_instance) : 
+                resource_creator.call(i)
             end
           end
 
@@ -40,7 +51,9 @@ module Crudie::Spec::Acceptance
         get singular_url do
           let(resource_name_id) { resource_instance.id }
           let!(:resource_instance) do
-            resource_creator.call(parent_instance, 1)
+            parent_exists ?
+              resource_creator.call(1, parent_instance) :
+              resource_creator.call(1)
           end
 
           example 'Show' do
@@ -50,59 +63,59 @@ module Crudie::Spec::Acceptance
         end
 
 
-        # Create spec
-        parameters = options[:parameters]
+        # # Create spec
+        # parameters = options[:parameters]
 
-        post plural_url do
-          parameters.each do |key, detail|
-            parameter key, detail[:desc], detail[:options]
-            let(key) { detail[:value] }
-          end
-          
-          example 'Create' do
-            do_request
+        # post plural_url do
+        #   parameters.each do |key, detail|
+        #     parameter key, detail[:desc], detail[:options]
+        #     let(key) { detail[:value] }
+        #   end
+        #   
+        #   example 'Create' do
+        #     do_request
 
-            expect(parent_instance.projects.count).to eq 1
-          end
-        end
+        #     expect(parent_instance.projects.count).to eq 1
+        #   end
+        # end
 
-        put singular_url do
-          parameters.each do |key, detail|
-            parameter key, detail[:desc], detail[:options]
-            let(key) { detail[:value] }
-          end
-          let(resource_name_id) { resource_instance.id }
-          let!(:resource_instance) do
-            resource_creator.call(parent_instance, 1)
-          end
+        # put singular_url do
+        #   parameters.each do |key, detail|
+        #     parameter key, detail[:desc], detail[:options]
+        #     let(key) { detail[:value] }
+        #   end
+        #   let(resource_name_id) { resource_instance.id }
+        #   let!(:resource_instance) do
+        #     resource_creator.call(parent_instance, 1)
+        #   end
 
-          example 'Updating' do
-            do_request
+        #   example 'Updating' do
+        #     do_request
 
-            resource_instance.reload
-            parameters.each do |key, val|
-              expect(resource_instance.send(key)).to eq(send(key))
-            end
-          end
-        end
+        #     resource_instance.reload
+        #     parameters.each do |key, val|
+        #       expect(resource_instance.send(key)).to eq(send(key))
+        #     end
+        #   end
+        # end
 
 
-        delete '/users/:user_id/projects/:project_id' do
-          parameters.each do |key, detail|
-            parameter key, detail[:desc], detail[:options]
-            let(key) { detail[:value] }
-          end
-          let(resource_name_id) { resource_instance.id }
-          let!(:resource_instance) do
-            resource_creator.call(parent_instance, 1)
-          end
+        # delete '/users/:user_id/projects/:project_id' do
+        #   parameters.each do |key, detail|
+        #     parameter key, detail[:desc], detail[:options]
+        #     let(key) { detail[:value] }
+        #   end
+        #   let(resource_name_id) { resource_instance.id }
+        #   let!(:resource_instance) do
+        #     resource_creator.call(parent_instance, 1)
+        #   end
 
-          example 'Deletion' do
-            do_request
-            expect(resource_context.call(parent_instance)
-                                   .where(resource_instance.id)).to be_empty
-          end
-        end
+        #   example 'Deletion' do
+        #     do_request
+        #     expect(resource_context.call(parent_instance)
+        #                            .where(resource_instance.id)).to be_empty
+        #   end
+        # end
         
       end
     end
