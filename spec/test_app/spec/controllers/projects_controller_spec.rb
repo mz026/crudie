@@ -49,9 +49,8 @@ RSpec.describe ProjectsController, :type => :controller do
     end
     it "returns projects of user" do
       get :index, params
-      p response.body
-      # expect(controller.instance_variable_get(:@projects)).to be(projects)
-      # expect(response.status).to eq 200
+      expect(controller.instance_variable_get(:@projects)).to be(projects)
+      expect(response.status).to eq 200
     end
   end
 

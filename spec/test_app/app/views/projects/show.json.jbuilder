@@ -1,1 +1,1 @@
-json.(@project)
+json.(@project, :id, :name)
