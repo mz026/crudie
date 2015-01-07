@@ -29,6 +29,10 @@ module Crudie::Spec::Acceptance
           singular_url = "/#{resource_names}/:#{resource_name_id}"
         end
 
+        only_actions = options[:only] || [ :index, :show, :update, :destroy, :create ]
+        except = options[:except] || []
+        actions = only_actions - except
+
         shared_context 'with_single_resource_instance' do 
           let!(:resource_instance) do
             if parent_exists
@@ -48,76 +52,86 @@ module Crudie::Spec::Acceptance
         end
 
         # index spec
-        get plural_url do
-          let!(:resources) do
-            3.times do |i|
-              parent_exists ? 
-                resource_creator.call(i, parent_instance) : 
-                resource_creator.call(i)
+        if actions.include?(:index)
+          get plural_url do
+            let!(:resources) do
+              3.times do |i|
+                parent_exists ? 
+                  resource_creator.call(i, parent_instance) : 
+                  resource_creator.call(i)
+              end
             end
-          end
 
-          example 'Index' do
-            do_request
-            expect(response_status).to eq 200
-            expect(JSON.parse(response_body).count).to eq 3
+            example 'Index' do
+              do_request
+              expect(response_status).to eq 200
+              expect(JSON.parse(response_body).count).to eq 3
+            end
           end
         end
 
         # show spec
-        get singular_url do
-          include_context 'with_single_resource_instance'
-          let(resource_name_id) { resource_instance.id }
+        if actions.include?(:show)
+          get singular_url do
+            include_context 'with_single_resource_instance'
+            let(resource_name_id) { resource_instance.id }
 
-          example 'Show' do
-            do_request
-            expect(JSON.parse(response_body)['id']).to eq(resource_instance.id)
+            example 'Show' do
+              do_request
+              expect(JSON.parse(response_body)['id']).to eq(resource_instance.id)
+            end
           end
         end
-
 
         # Create spec
-        post plural_url do
-          include_context 'with_parameters'
-          example 'Create' do
-            do_request
+        if actions.include?(:create)
+          post plural_url do
+            include_context 'with_parameters'
+            example 'Create' do
+              do_request
 
-            if parent_exists
-              expect(resource_context.call(parent_instance).count).to eq 1
-            else
-              expect(resource_context.call.count).to eq 1
-            end
+              if parent_exists
+                expect(resource_context.call(parent_instance).count).to eq 1
+              else
+                expect(resource_context.call.count).to eq 1
+              end
 
-          end
-        end
-
-        put singular_url do
-          include_context 'with_single_resource_instance'
-          include_context 'with_parameters'
-
-          example 'Updating' do
-            do_request
-
-            resource_instance.reload
-            request_parameters.each do |key, val|
-              expect(resource_instance.send(key)).to eq(send(key))
             end
           end
         end
 
+        # Update spec
+        if actions.include?(:update)
+          put singular_url do
+            include_context 'with_single_resource_instance'
+            include_context 'with_parameters'
 
-        delete singular_url do
-          include_context 'with_single_resource_instance'
-          let(resource_name_id) { resource_instance.id }
+            example 'Updating' do
+              do_request
 
-          example 'Deletion' do
-            do_request
-            if parent_exists
-              expect(resource_context.call(parent_instance)
-                                     .where(resource_instance.id)).to be_empty
-            else
-              expect(resource_context.call
-                                     .where(resource_instance.id)).to be_empty
+              resource_instance.reload
+              request_parameters.each do |key, val|
+                expect(resource_instance.send(key)).to eq(send(key))
+              end
+            end
+          end
+        end
+
+        # destroy spec
+        if actions.include?(:destroy)
+          delete singular_url do
+            include_context 'with_single_resource_instance'
+            let(resource_name_id) { resource_instance.id }
+
+            example 'Deletion' do
+              do_request
+              if parent_exists
+                expect(resource_context.call(parent_instance)
+                                       .where(resource_instance.id)).to be_empty
+              else
+                expect(resource_context.call
+                                       .where(resource_instance.id)).to be_empty
+              end
             end
           end
         end
