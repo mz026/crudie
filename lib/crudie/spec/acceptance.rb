@@ -4,8 +4,8 @@
 # include Crudie::Spec::Acceptance
 # include_acceptance_spec_for :resource => {
 #                               :name => :user,
-#                               :creator => ->(index){ User.create :name => index },
-#                               :context => ->{ User.all }
+#                               :creator => Proc.new {|index| User.create :name => index },
+#                               :context => Proc.new { User.all }
 #                             },
 #                             :parameters => {
 #                               :name => {
@@ -22,12 +22,12 @@
 # include Crudie::Spec::Acceptance
 # include_acceptance_spec_for :parent => {
 #                               :name => :user,
-#                               :creator => ->{ User.create :name => 'jack' }
+#                               :creator => Proc.new { User.create :name => 'jack' }
 #                             },
 #                             :resource => {
 #                               :name => :project,
-#                               :creator => ->(i, user){ user.projects.create :name => i },
-#                               :context => ->(parent) { parent.projects }
+#                               :creator => Proc.new {|i, user| user.projects.create :name => i },
+#                               :context => Proc.new {|parent| parent.projects }
 #                             },
 #                             :parameters => {
 #                               :name => {
@@ -61,7 +61,7 @@ module Crudie::Spec::Acceptance
           plural_url = "/#{parent_names}/:#{parent_name_id}/#{resource_names}"
           singular_url = "#{plural_url}/:#{resource_name_id}"
 
-          let(:parent_instance) { parent_creator.call }
+          let(:parent_instance) { self.instance_eval &parent_creator}
           let(parent_name_id) { parent_instance.id }
         else
           plural_url = "/#{resource_names}"
@@ -166,10 +166,10 @@ module Crudie::Spec::Acceptance
               do_request
               if parent_exists
                 expect(resource_context.call(parent_instance)
-                                       .where(resource_instance.id)).to be_empty
+                                       .where(:id => resource_instance.id)).to be_empty
               else
                 expect(resource_context.call
-                                       .where(resource_instance.id)).to be_empty
+                                       .where(:id => resource_instance.id)).to be_empty
               end
             end
           end

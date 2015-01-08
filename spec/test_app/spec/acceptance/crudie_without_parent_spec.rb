@@ -6,8 +6,8 @@ resource 'User' do
   include Crudie::Spec::Acceptance
   include_acceptance_spec_for :resource => {
                                 :name => :user,
-                                :creator => ->(index){ User.create :name => index },
-                                :context => ->{ User.all }
+                                :creator => Proc.new {|index| User.create :name => index },
+                                :context => Proc.new { User.all }
                               },
                               :parameters => {
                                 :name => {

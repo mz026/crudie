@@ -6,12 +6,12 @@ resource 'Projects' do
   include Crudie::Spec::Acceptance
   include_acceptance_spec_for :parent => {
                                 :name => :user,
-                                :creator => ->{ User.create :name => 'jack' }
+                                :creator => Proc.new { User.create :name => 'jack' }
                               },
                               :resource => {
                                 :name => :project,
-                                :creator => ->(i, user){ user.projects.create :name => i },
-                                :context => ->(parent) { parent.projects }
+                                :creator => Proc.new {|i, user| user.projects.create :name => i },
+                                :context => Proc.new {|parent| parent.projects }
                               },
                               :parameters => {
                                 :name => {
