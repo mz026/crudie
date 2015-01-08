@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resources :user do
+  resources :users do
     resources :projects
   end
   # The priority is based upon order of creation: first created -> highest priority.

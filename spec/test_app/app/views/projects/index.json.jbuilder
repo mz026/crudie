@@ -1,1 +1,1 @@
-json.array! @projects
+json.array! @projects, :id, :name
