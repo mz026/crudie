@@ -85,7 +85,11 @@ module Crudie::Spec::Acceptance
         shared_context 'with_parameters' do
           request_parameters.each do |key, detail|
             parameter key, detail[:desc], detail[:options]
-            let(key) { detail[:value] }
+            let(key) do
+              detail[:value].is_a?(Proc) ?
+                detail[:value].call :
+                detail[:value]
+            end
           end
           let(resource_name_id) { resource_instance.id }
         end
