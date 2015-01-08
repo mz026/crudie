@@ -216,6 +216,8 @@ resource 'Projects' do
                               }
 end
 ```
+### Note:
+- `parameters[:key][:value]` can take either value or `Proc`
 
 # Licence: 
 MIT
