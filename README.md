@@ -82,6 +82,7 @@ Say we have a resource named `item`, by invoking `crudie :item`, the `create` me
 
 
 ## Example
+
 ```ruby
 # config/route.rb
 
@@ -112,6 +113,7 @@ end
 describe ItemsController do
   include_crudie_spec_for :items, :context_name => :user
 end
+
 ```
 
 - views to prepare:
@@ -127,21 +129,87 @@ end
 - run tests by `$ bundle exec rspec spec/`
 
 ### Spec helper:
-`Crudie` provides spec helper to do the unit test using RSpec
+`Crudie` provides spec helper to do 
+1. unit tests using RSpec
+2. acceptance test using [rspec_api_documentation](https://github.com/zipmark/rspec_api_documentation)
 
+
+### Unit test using rspec
 ```ruby
 # controller file
 class ItemsController < ApplicationController
+  include Crudie
   crudie :items
 end
 
 # spec
 require 'crudie/spec'
 describe ItemsController do
-  include Crudie::Spec
+  include Crudie::Spec::Unit
   include_crudie_spec_for :items, :context_name => :user,
                           :only => [ :index, :show, :update ],
                           :except => [ :destroy ]
+end
+```
+
+### Accepting Test using rspec_api_documentation
+1. resource without parent
+```ruby
+# in spec/acceptance/users_spec.rb
+
+require 'rails_helper'
+require 'rspec_api_documentation/dsl'
+require 'crudie/spec'
+
+resource 'User' do
+  include Crudie::Spec::Acceptance
+  include_acceptance_spec_for :resource => {
+                                :name => :user,
+                                :creator => Proc.new {|index| User.create :name => index },
+                                :context => Proc.new { User.all }
+                              },
+                              :parameters => {
+                                :name => {
+                                  :desc => 'user name',
+                                  :value => 'the new user name',
+                                  :options => {
+                                    :scope => :user,
+                                    :required => true
+                                  }
+                                }
+                              }
+end
+```
+
+2. resource with parent:
+```ruby
+# in spec/acceptance/projects_spec.rb
+
+require 'rails_helper'
+require 'rspec_api_documentation/dsl'
+require 'crudie/spec'
+
+resource 'Projects' do
+  include Crudie::Spec::Acceptance
+  include_acceptance_spec_for :parent => {
+                                :name => :user,
+                                :creator => Proc.new { User.create :name => 'jack' }
+                              },
+                              :resource => {
+                                :name => :project,
+                                :creator => Proc.new {|i, user| user.projects.create :name => i },
+                                :context => Proc.new {|parent| parent.projects }
+                              },
+                              :parameters => {
+                                :name => {
+                                  :desc => 'project name',
+                                  :value => 'the new project name',
+                                  :options => {
+                                    :scope => :project,
+                                    :required => true
+                                  }
+                                }
+                              }
 end
 ```
 
