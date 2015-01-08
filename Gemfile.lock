@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    crudie (0.0.3)
+    crudie (0.0.4)
       rails (>= 4.0.0)
 
 GEM
