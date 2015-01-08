@@ -65,6 +65,7 @@ Say we have a resource named `items`:
 
 ```ruby
 class ItemsController < ApplicationController
+  include Crudie
   crudie :items
 end
 ```
@@ -93,6 +94,7 @@ end
 
 # app/controllers/items_controller
 class ItemsController < ApplicationController
+  include Crudie
   crudie :items
 
   def crudie_context
@@ -129,8 +131,10 @@ end
 - run tests by `$ bundle exec rspec spec/`
 
 ### Spec helper:
+
 `Crudie` provides spec helper to do 
-1. unit tests using RSpec
+
+1. unit tests using RSpec  
 2. acceptance test using [rspec_api_documentation](https://github.com/zipmark/rspec_api_documentation)
 
 
